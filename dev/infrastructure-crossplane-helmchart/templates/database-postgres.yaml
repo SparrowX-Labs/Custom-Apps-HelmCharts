@@ -95,10 +95,7 @@ spec:
     dbName: {{ .Values.database.name | quote }}
     port: {{ .Values.database.port }}
     username: {{ .Values.database.username | quote }}
-    autoGeneratePassword: true
-    passwordSecretRef:
-      name: {{ $connectionSecretName | quote }}
-      key: password
+    manageMasterUserPassword: true
     dbSubnetGroupNameRef:
       name: {{ $subnetGroupName | quote }}
     vpcSecurityGroupIdRefs:
