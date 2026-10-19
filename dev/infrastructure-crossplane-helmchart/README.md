@@ -31,10 +31,12 @@ database:
 ```
 
 The RDS provider generates the password and publishes a Kubernetes connection
-Secret. When `database.secretsManager.enabled` is true, the generated password
-is also written to the AWS Secrets Manager secret named
-`<projectName>/<database.name>/creds`. The username remains the configured
-`database.username` value (`postgres_admin` by default).
+Secret. When `database.secretsManager.enabled` is true, the chart creates the
+AWS Secrets Manager secret metadata. To create a version, set
+`database.secretsManager.passwordSourceSecretName` to a populated Kubernetes
+Secret and set its key with `passwordSourceSecretKey`. This is intentionally
+separate because the RDS connection Secret is empty until the database is
+ready.
 
 Example:
 

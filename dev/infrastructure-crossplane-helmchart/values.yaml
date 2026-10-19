@@ -24,6 +24,11 @@ database:
   secretsManager:
     enabled: true
     name: ""
+    # SecretVersion is rendered only when this references a populated
+    # Kubernetes Secret. The RDS-generated connection Secret is empty until
+    # the instance is ready, so it cannot be used as an initial SecretVersion
+    # input during the same reconciliation.
+    passwordSourceSecretName: ""
     passwordSourceSecretKey: password
 
 s3:
