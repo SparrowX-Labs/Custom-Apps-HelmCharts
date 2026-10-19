@@ -30,8 +30,9 @@ database:
   multiAZ: false
 ```
 
-The RDS provider generates the password and publishes a Kubernetes connection
-Secret. When `database.secretsManager.enabled` is true, the chart creates the
+The RDS provider generates the password into the Kubernetes connection Secret
+and publishes the connection details there. When
+`database.secretsManager.enabled` is true, the chart creates the
 AWS Secrets Manager secret metadata. To create a version, set
 `database.secretsManager.passwordSourceSecretName` to a populated Kubernetes
 Secret and set its key with `passwordSourceSecretKey`. This is intentionally
