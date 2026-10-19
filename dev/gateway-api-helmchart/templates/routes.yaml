@@ -1,0 +1,30 @@
+{{- range .Values.httpRoutes }}
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+{{ toYaml . | nindent 0 }}
+{{- end }}
+{{- range .Values.grpcRoutes }}
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: GRPCRoute
+{{ toYaml . | nindent 0 }}
+{{- end }}
+{{- range .Values.tlsRoutes }}
+---
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: TLSRoute
+{{ toYaml . | nindent 0 }}
+{{- end }}
+{{- range .Values.tcpRoutes }}
+---
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: TCPRoute
+{{ toYaml . | nindent 0 }}
+{{- end }}
+{{- range .Values.udpRoutes }}
+---
+apiVersion: gateway.networking.k8s.io/v1alpha2
+kind: UDPRoute
+{{ toYaml . | nindent 0 }}
+{{- end }}

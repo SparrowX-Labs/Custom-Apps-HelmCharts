@@ -1,0 +1,52 @@
+nameOverride: ""
+fullnameOverride: ""
+replicaCount: 1
+image:
+  repository: ""
+  tag: ""
+  pullPolicy: IfNotPresent
+imagePullSecrets: []
+podAnnotations: {}
+podLabels: {}
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+container:
+  name: app
+  port: 8080
+  protocol: TCP
+  command: []
+  args: []
+  env: []
+  envFrom: []
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+  targetPort: http
+  annotations: {}
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts: []
+  tls: []
+configMap:
+  enabled: false
+  data: {}
+secret:
+  enabled: false
+  type: Opaque
+  data: {}
+  stringData: {}
+resources: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+

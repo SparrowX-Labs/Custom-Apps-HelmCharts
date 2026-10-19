@@ -1,0 +1,6 @@
+apiVersion: v2
+name: gateway-api-helmchart
+description: Values-driven Gateway API resources
+type: application
+version: 0.1.0
+

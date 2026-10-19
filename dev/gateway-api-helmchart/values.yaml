@@ -1,0 +1,11 @@
+gatewayClasses: []
+gateways: []
+httpRoutes: []
+grpcRoutes: []
+tlsRoutes: []
+tcpRoutes: []
+udpRoutes: []
+referenceGrants: []
+backendTLSPolicies: []
+extraResources: []
+
