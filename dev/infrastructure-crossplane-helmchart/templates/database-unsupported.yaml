@@ -1,0 +1,3 @@
+{{- if and .Values.database.enabled (not (has .Values.database.type (list "postgres" "mysql"))) }}
+{{- fail (printf "unsupported database.type=%s; supported types are postgres and mysql" .Values.database.type) }}
+{{- end }}

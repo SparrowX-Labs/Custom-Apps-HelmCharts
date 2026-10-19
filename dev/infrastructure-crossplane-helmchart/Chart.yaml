@@ -2,5 +2,4 @@ apiVersion: v2
 name: infrastructure-helmchart
 description: Values-driven infrastructure and Crossplane resources
 type: application
-version: 0.1.0
-
+version: 0.2.0

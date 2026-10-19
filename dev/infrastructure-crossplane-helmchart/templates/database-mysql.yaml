@@ -1,0 +1,3 @@
+{{- if and .Values.database.enabled (eq .Values.database.type "mysql") }}
+{{- fail "database.type=mysql is reserved for a future MySQL implementation" }}
+{{- end }}

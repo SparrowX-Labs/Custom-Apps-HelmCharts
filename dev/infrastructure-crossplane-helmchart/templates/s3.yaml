@@ -1,0 +1,21 @@
+{{- if .Values.s3.enabled }}
+{{- $providerConfig := .Values.providerConfig.name }}
+{{- $bucketName := required "s3.name is required when s3.enabled is true" .Values.s3.name }}
+---
+apiVersion: s3.aws.m.upbound.io/v1beta1
+kind: Bucket
+metadata:
+  name: {{ $bucketName | quote }}
+spec:
+  deletionPolicy: Orphan
+  forProvider:
+    region: {{ .Values.region | quote }}
+    forceDestroy: {{ .Values.s3.forceDestroy }}
+    tags:
+      Name: {{ $bucketName | quote }}
+      Project: {{ .Values.projectName | quote }}
+      Environment: {{ .Values.environment | quote }}
+  providerConfigRef:
+    name: {{ $providerConfig | quote }}
+    kind: ClusterProviderConfig
+{{- end }}

@@ -1,0 +1,159 @@
+{{- if and .Values.database.enabled (eq .Values.database.type "postgres") }}
+{{- $namespace := .Release.Namespace }}
+{{- $providerConfig := .Values.providerConfig.name }}
+{{- $databaseName := include "infrastructure-helmchart.databaseName" . }}
+{{- $securityGroupName := include "infrastructure-helmchart.databaseSecurityGroupName" . }}
+{{- $subnetGroupName := include "infrastructure-helmchart.databaseSubnetGroupName" . }}
+{{- $connectionSecretName := include "infrastructure-helmchart.connectionSecretName" . }}
+{{- $awsSecretName := include "infrastructure-helmchart.awsSecretName" . }}
+{{- $vpcID := required "vpcId is required when database.enabled is true" .Values.vpcId }}
+{{- $subnetIDs := required "privateSubnetIds are required when database.enabled is true" .Values.privateSubnetIds }}
+---
+apiVersion: ec2.aws.m.upbound.io/v1beta1
+kind: SecurityGroup
+metadata:
+  name: {{ $securityGroupName | quote }}
+  namespace: {{ $namespace | quote }}
+spec:
+  deletionPolicy: Orphan
+  forProvider:
+    name: {{ $securityGroupName | quote }}
+    description: {{ printf "PostgreSQL access for %s" $databaseName | quote }}
+    region: {{ .Values.region | quote }}
+    vpcId: {{ $vpcID | quote }}
+    tags:
+      Name: {{ $securityGroupName | quote }}
+      Project: {{ .Values.projectName | quote }}
+      Environment: {{ .Values.environment | quote }}
+  providerConfigRef:
+    name: {{ $providerConfig | quote }}
+    kind: ClusterProviderConfig
+{{- range $index, $rule := .Values.database.securityGroupIngress }}
+---
+apiVersion: ec2.aws.m.upbound.io/v1beta1
+kind: SecurityGroupIngressRule
+metadata:
+  name: {{ printf "%s-ingress-%d" $securityGroupName $index | trunc 63 | trimSuffix "-" | quote }}
+  namespace: {{ $namespace | quote }}
+spec:
+  forProvider:
+    region: {{ $.Values.region | quote }}
+    securityGroupIdRef:
+      name: {{ $securityGroupName | quote }}
+    ipProtocol: {{ default "tcp" $rule.ipProtocol | quote }}
+    fromPort: {{ default $.Values.database.port $rule.fromPort }}
+    toPort: {{ default $.Values.database.port $rule.toPort }}
+    {{- with $rule.cidrIpv4 }}
+    cidrIpv4: {{ . | quote }}
+    {{- end }}
+    {{- with $rule.referencedSecurityGroupId }}
+    referencedSecurityGroupId: {{ . | quote }}
+    {{- end }}
+    {{- with $rule.description }}
+    description: {{ . | quote }}
+    {{- end }}
+  providerConfigRef:
+    name: {{ $.Values.providerConfig.name | quote }}
+    kind: ClusterProviderConfig
+{{- end }}
+---
+apiVersion: rds.aws.m.upbound.io/v1beta1
+kind: SubnetGroup
+metadata:
+  name: {{ $subnetGroupName | quote }}
+  namespace: {{ $namespace | quote }}
+spec:
+  deletionPolicy: Orphan
+  forProvider:
+    description: {{ printf "Private subnets for %s %s database" .Values.environment .Values.database.name | quote }}
+    region: {{ .Values.region | quote }}
+    subnetIds:
+      {{- toYaml $subnetIDs | nindent 6 }}
+    tags:
+      Name: {{ $subnetGroupName | quote }}
+      Project: {{ .Values.projectName | quote }}
+      Environment: {{ .Values.environment | quote }}
+  providerConfigRef:
+    name: {{ $providerConfig | quote }}
+    kind: ClusterProviderConfig
+---
+apiVersion: rds.aws.m.upbound.io/v1beta1
+kind: Instance
+metadata:
+  name: {{ $databaseName | quote }}
+  namespace: {{ $namespace | quote }}
+spec:
+  deletionPolicy: Orphan
+  forProvider:
+    region: {{ .Values.region | quote }}
+    engine: postgres
+    engineVersion: {{ .Values.database.engineVersion | quote }}
+    instanceClass: {{ .Values.database.instanceClass | quote }}
+    allocatedStorage: {{ .Values.database.allocatedStorage }}
+    storageType: gp3
+    storageEncrypted: true
+    dbName: {{ .Values.database.name | quote }}
+    port: {{ .Values.database.port }}
+    username: {{ .Values.database.username | quote }}
+    autoGeneratePassword: true
+    dbSubnetGroupNameRef:
+      name: {{ $subnetGroupName | quote }}
+    vpcSecurityGroupIdRefs:
+      - name: {{ $securityGroupName | quote }}
+    publiclyAccessible: {{ .Values.database.publiclyAccessible }}
+    backupRetentionPeriod: {{ .Values.database.backupRetentionPeriod }}
+    multiAz: {{ .Values.database.multiAZ }}
+    autoMinorVersionUpgrade: true
+    copyTagsToSnapshot: true
+    tags:
+      Name: {{ $databaseName | quote }}
+      Project: {{ .Values.projectName | quote }}
+      Environment: {{ .Values.environment | quote }}
+  writeConnectionSecretToRef:
+    name: {{ $connectionSecretName | quote }}
+    namespace: {{ $namespace | quote }}
+  providerConfigRef:
+    name: {{ $providerConfig | quote }}
+    kind: ClusterProviderConfig
+{{- if .Values.database.secretsManager.enabled }}
+---
+apiVersion: secretsmanager.aws.m.upbound.io/v1beta1
+kind: Secret
+metadata:
+  name: {{ printf "%s-secret" $databaseName | quote }}
+  namespace: {{ $namespace | quote }}
+spec:
+  deletionPolicy: Orphan
+  forProvider:
+    name: {{ $awsSecretName | quote }}
+    description: {{ printf "PostgreSQL credentials for %s" $databaseName | quote }}
+    region: {{ .Values.region | quote }}
+    recoveryWindowInDays: 7
+    tags:
+      Name: {{ printf "%s-secret" $databaseName | quote }}
+      Project: {{ .Values.projectName | quote }}
+      Environment: {{ .Values.environment | quote }}
+  providerConfigRef:
+    name: {{ $providerConfig | quote }}
+    kind: ClusterProviderConfig
+---
+apiVersion: secretsmanager.aws.m.upbound.io/v1beta1
+kind: SecretVersion
+metadata:
+  name: {{ printf "%s-secret-version" $databaseName | quote }}
+  namespace: {{ $namespace | quote }}
+spec:
+  deletionPolicy: Orphan
+  forProvider:
+    region: {{ .Values.region | quote }}
+    secretIdRef:
+      name: {{ printf "%s-secret" $databaseName | quote }}
+    secretStringSecretRef:
+      name: {{ $connectionSecretName | quote }}
+      namespace: {{ $namespace | quote }}
+      key: {{ .Values.database.secretsManager.passwordSourceSecretKey | quote }}
+  providerConfigRef:
+    name: {{ $providerConfig | quote }}
+    kind: ClusterProviderConfig
+{{- end }}
+{{- end }}
