@@ -89,7 +89,6 @@ spec:
   deletionPolicy: Orphan
   forProvider:
     region: {{ .Values.region | quote }}
-    kmsKeyId: {{ .Values.database.kmsKeyId | quote }}
     engine: postgres
     engineVersion: {{ .Values.database.engineVersion | quote }}
     instanceClass: {{ .Values.database.instanceClass | quote }}
@@ -100,7 +99,6 @@ spec:
     port: {{ .Values.database.port }}
     username: {{ .Values.database.username | quote }}
     manageMasterUserPassword: true
-    masterUserSecretKmsKeyId: {{ .Values.database.masterUserSecretKmsKeyId | quote }}
     dbSubnetGroupNameRef:
       name: {{ $subnetGroupName | quote }}
     vpcSecurityGroupIdRefs:

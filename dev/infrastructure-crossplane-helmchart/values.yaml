@@ -15,11 +15,6 @@ database:
   instanceClass: db.t4g.micro
   allocatedStorage: 20
   engineVersion: "16"
-  # Explicitly use the AWS-managed RDS key. This avoids provider versions
-  # that send a null KMS key when storage encryption is enabled.
-  kmsKeyId: alias/aws/rds
-  # AWS-managed key used for the RDS master password in Secrets Manager.
-  masterUserSecretKmsKeyId: alias/aws/secretsmanager
   backupRetentionPeriod: 1
   multiAZ: false
   port: 5432
