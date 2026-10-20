@@ -1,4 +1,4 @@
-{{- if and .Values.database.enabled (eq .Values.database.type "postgres") }}
+{{- if and (not .Values.composition.enabled) .Values.database.enabled (eq .Values.database.engine "postgres") }}
 {{- $namespace := .Release.Namespace }}
 {{- $providerConfig := .Values.providerConfig.name }}
 {{- $databaseName := include "infrastructure-helmchart.databaseName" . }}
@@ -96,23 +96,23 @@ spec:
   forProvider:
     region: {{ .Values.region | quote }}
     engine: postgres
-    engineVersion: {{ .Values.database.engineVersion | quote }}
+    engineVersion: "16"
     identifier: {{ default $databaseName .Values.database.identifier | quote }}
-    applyImmediately: {{ .Values.database.applyImmediately }}
-    instanceClass: {{ .Values.database.instanceClass | quote }}
-    allocatedStorage: {{ .Values.database.allocatedStorage }}
+    applyImmediately: true
+    instanceClass: db.t4g.micro
+    allocatedStorage: {{ .Values.database.storage }}
     storageType: gp3
     storageEncrypted: true
     dbName: {{ .Values.database.name | quote }}
-    port: {{ .Values.database.port }}
-    username: {{ .Values.database.username | quote }}
+    port: 5432
+    username: postgres_admin
     manageMasterUserPassword: true
     dbSubnetGroupNameRef:
       name: {{ $subnetGroupName | quote }}
     vpcSecurityGroupIdRefs:
       - name: {{ $securityGroupName | quote }}
-    publiclyAccessible: {{ .Values.database.publiclyAccessible }}
-    backupRetentionPeriod: {{ .Values.database.backupRetentionPeriod }}
+    publiclyAccessible: false
+    backupRetentionPeriod: 1
     multiAz: {{ .Values.database.multiAZ }}
     autoMinorVersionUpgrade: true
     copyTagsToSnapshot: true

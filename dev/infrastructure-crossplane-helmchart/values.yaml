@@ -2,8 +2,17 @@ environment: dev
 projectName: sparrowx
 managedBy: crossplane
 region: eu-west-1
+hostedZoneId: ""
+hostedZoneName: ""
 vpcId: ""
 privateSubnetIds: []
+
+composition:
+  enabled: true
+  name: application-infrastructure
+
+service:
+  name: ""
 
 providerConfig:
   create: true
@@ -11,19 +20,11 @@ providerConfig:
 
 database:
   enabled: false
-  type: postgres
+  engine: postgres
   name: ""
-  identifier: ""
-  applyImmediately: true
-  instanceClass: db.t4g.micro
-  allocatedStorage: 20
-  engineVersion: "16"
-  backupRetentionPeriod: 1
+  size: small
+  storage: 20
   multiAZ: false
-  port: 5432
-  username: postgres_admin
-  publiclyAccessible: false
-  securityGroupIngress: []
 
 s3:
   enabled: false

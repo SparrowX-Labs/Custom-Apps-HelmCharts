@@ -42,13 +42,29 @@ spec:
           args:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.container.env }}
+          {{- if or .Values.database.enabled .Values.container.env }}
           env:
+            {{- if .Values.database.enabled }}
+            - name: DB_ENGINE
+              value: {{ .Values.database.engine | quote }}
+            - name: DB_HOST
+              value: {{ required "database.host is required when database.enabled is true" .Values.database.host | quote }}
+            - name: DB_PORT
+              value: {{ .Values.database.port | quote }}
+            {{- end }}
+            {{- with .Values.container.env }}
             {{- toYaml . | nindent 12 }}
+            {{- end }}
           {{- end }}
-          {{- with .Values.container.envFrom }}
+          {{- if or .Values.database.enabled .Values.container.envFrom }}
           envFrom:
+            {{- if .Values.database.enabled }}
+            - secretRef:
+                name: {{ include "application-helmchart.databaseSecretName" . }}
+            {{- end }}
+            {{- with .Values.container.envFrom }}
             {{- toYaml . | nindent 12 }}
+            {{- end }}
           {{- end }}
           {{- with .Values.resources }}
           resources:

@@ -1,5 +1,7 @@
 nameOverride: ""
 fullnameOverride: ""
+projectName: sparrowx
+environment: dev
 replicaCount: 1
 image:
   repository: ""
@@ -50,3 +52,12 @@ autoscaling:
   maxReplicas: 3
   targetCPUUtilizationPercentage: 80
 
+database:
+  enabled: false
+  name: ""
+  engine: postgres
+  port: 5432
+  host: ""
+  secretStore:
+    name: aws-secretsmanager
+    kind: ClusterSecretStore

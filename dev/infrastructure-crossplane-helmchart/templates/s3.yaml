@@ -1,4 +1,4 @@
-{{- if .Values.s3.enabled }}
+{{- if and (not .Values.composition.enabled) .Values.s3.enabled }}
 {{- $providerConfig := .Values.providerConfig.name }}
 {{- $bucketName := required "s3.name is required when s3.enabled is true" .Values.s3.name }}
 ---
