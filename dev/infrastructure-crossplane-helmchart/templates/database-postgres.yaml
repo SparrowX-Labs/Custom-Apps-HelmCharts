@@ -122,7 +122,6 @@ spec:
       ManagedBy: {{ .Values.managedBy | quote }}
   writeConnectionSecretToRef:
     name: {{ $connectionSecretName | quote }}
-    namespace: {{ $namespace | quote }}
   providerConfigRef:
     name: {{ $providerConfig | quote }}
     kind: ClusterProviderConfig
