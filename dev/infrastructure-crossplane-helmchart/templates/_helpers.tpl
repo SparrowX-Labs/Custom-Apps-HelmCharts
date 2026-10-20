@@ -14,7 +14,3 @@
 {{- define "infrastructure-helmchart.connectionSecretName" -}}
 {{- printf "%s-connection" (include "infrastructure-helmchart.databaseName" .) | trunc 253 | trimSuffix "-" }}
 {{- end }}
-
-{{- define "infrastructure-helmchart.awsSecretName" -}}
-{{- default (printf "%s/%s/creds" .Values.projectName .Values.database.name) .Values.database.secretsManager.name }}
-{{- end }}

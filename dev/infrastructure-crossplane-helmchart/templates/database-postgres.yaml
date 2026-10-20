@@ -5,7 +5,6 @@
 {{- $securityGroupName := include "infrastructure-helmchart.databaseSecurityGroupName" . }}
 {{- $subnetGroupName := include "infrastructure-helmchart.databaseSubnetGroupName" . }}
 {{- $connectionSecretName := include "infrastructure-helmchart.connectionSecretName" . }}
-{{- $awsSecretName := include "infrastructure-helmchart.awsSecretName" . }}
 {{- $vpcID := required "vpcId is required when database.enabled is true" .Values.vpcId }}
 {{- $subnetIDs := required "privateSubnetIds are required when database.enabled is true" .Values.privateSubnetIds }}
 {{- if not (regexMatch "^[a-z][a-z0-9]*$" .Values.database.name) }}
@@ -118,47 +117,4 @@ spec:
   providerConfigRef:
     name: {{ $providerConfig | quote }}
     kind: ClusterProviderConfig
-{{- if .Values.database.secretsManager.enabled }}
----
-apiVersion: secretsmanager.aws.m.upbound.io/v1beta1
-kind: Secret
-metadata:
-  name: {{ printf "%s-secret" $databaseName | quote }}
-  namespace: {{ $namespace | quote }}
-spec:
-  deletionPolicy: Orphan
-  forProvider:
-    name: {{ $awsSecretName | quote }}
-    description: {{ printf "PostgreSQL credentials for %s" $databaseName | quote }}
-    region: {{ .Values.region | quote }}
-    recoveryWindowInDays: 7
-    tags:
-      Name: {{ printf "%s-secret" $databaseName | quote }}
-      Project: {{ .Values.projectName | quote }}
-      Environment: {{ .Values.environment | quote }}
-  providerConfigRef:
-    name: {{ $providerConfig | quote }}
-    kind: ClusterProviderConfig
-{{- if .Values.database.secretsManager.passwordSourceSecretName }}
----
-apiVersion: secretsmanager.aws.m.upbound.io/v1beta1
-kind: SecretVersion
-metadata:
-  name: {{ printf "%s-secret-version" $databaseName | quote }}
-  namespace: {{ $namespace | quote }}
-spec:
-  deletionPolicy: Orphan
-  forProvider:
-    region: {{ .Values.region | quote }}
-    secretIdRef:
-      name: {{ printf "%s-secret" $databaseName | quote }}
-    secretStringSecretRef:
-      name: {{ .Values.database.secretsManager.passwordSourceSecretName | quote }}
-      namespace: {{ $namespace | quote }}
-      key: {{ .Values.database.secretsManager.passwordSourceSecretKey | quote }}
-  providerConfigRef:
-    name: {{ $providerConfig | quote }}
-    kind: ClusterProviderConfig
-{{- end }}
-{{- end }}
 {{- end }}

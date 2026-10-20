@@ -30,15 +30,10 @@ database:
   multiAZ: false
 ```
 
-RDS manages the master password in AWS Secrets Manager, avoiding a password
-Secret that must be created in Kubernetes before the database exists. The RDS
-connection Secret contains the connection details published by Crossplane.
-When `database.secretsManager.enabled` is true, the chart creates the
-AWS Secrets Manager secret metadata. To create a version, set
-`database.secretsManager.passwordSourceSecretName` to a populated Kubernetes
-Secret and set its key with `passwordSourceSecretKey`. This is intentionally
-separate because the RDS connection Secret is empty until the database is
-ready.
+RDS manages the master password in AWS Secrets Manager, avoiding a custom
+Secrets Manager resource that must be created before the database exists. The
+chart does not create Secrets Manager resources; it only requests that RDS
+manage the master password and writes the Crossplane connection Secret.
 
 Example:
 
