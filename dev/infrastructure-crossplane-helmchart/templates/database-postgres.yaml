@@ -8,6 +8,9 @@
 {{- $awsSecretName := include "infrastructure-helmchart.awsSecretName" . }}
 {{- $vpcID := required "vpcId is required when database.enabled is true" .Values.vpcId }}
 {{- $subnetIDs := required "privateSubnetIds are required when database.enabled is true" .Values.privateSubnetIds }}
+{{- if not (regexMatch "^[a-z][a-z0-9]*$" .Values.database.name) }}
+{{- fail "database.name must begin with a lowercase letter and contain only lowercase letters and numbers" }}
+{{- end }}
 ---
 apiVersion: ec2.aws.m.upbound.io/v1beta1
 kind: SecurityGroup
@@ -86,6 +89,7 @@ spec:
   deletionPolicy: Orphan
   forProvider:
     region: {{ .Values.region | quote }}
+    kmsKeyId: {{ .Values.database.kmsKeyId | quote }}
     engine: postgres
     engineVersion: {{ .Values.database.engineVersion | quote }}
     instanceClass: {{ .Values.database.instanceClass | quote }}

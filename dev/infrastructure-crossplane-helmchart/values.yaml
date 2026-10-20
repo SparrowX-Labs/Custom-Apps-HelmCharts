@@ -15,6 +15,9 @@ database:
   instanceClass: db.t4g.micro
   allocatedStorage: 20
   engineVersion: "16"
+  # Explicitly use the AWS-managed RDS key. This avoids provider versions
+  # that send a null KMS key when storage encryption is enabled.
+  kmsKeyId: alias/aws/rds
   backupRetentionPeriod: 1
   multiAZ: false
   port: 5432
@@ -22,7 +25,7 @@ database:
   publiclyAccessible: false
   securityGroupIngress: []
   secretsManager:
-    enabled: true
+    enabled: false
     name: ""
     # SecretVersion is rendered only when this references a populated
     # Kubernetes Secret. The RDS-generated connection Secret is empty until
