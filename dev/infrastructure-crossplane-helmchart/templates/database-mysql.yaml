@@ -1,3 +1,0 @@
-{{- if and (not .Values.composition.enabled) .Values.database.enabled (eq .Values.database.engine "mysql") }}
-{{- fail "database.type=mysql is reserved for a future MySQL implementation" }}
-{{- end }}

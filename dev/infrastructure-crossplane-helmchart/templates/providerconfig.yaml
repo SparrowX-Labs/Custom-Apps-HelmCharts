@@ -1,9 +1,0 @@
-{{- if .Values.providerConfig.create }}
-apiVersion: aws.m.upbound.io/v1beta1
-kind: ClusterProviderConfig
-metadata:
-  name: {{ .Values.providerConfig.name | quote }}
-spec:
-  credentials:
-    source: PodIdentity
-{{- end }}

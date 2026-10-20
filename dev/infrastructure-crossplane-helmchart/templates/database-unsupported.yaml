@@ -1,3 +1,0 @@
-{{- if and (not .Values.composition.enabled) .Values.database.enabled (not (has .Values.database.engine (list "postgres" "mysql"))) }}
-{{- fail (printf "unsupported database.engine=%s; supported types are postgres and mysql" .Values.database.engine) }}
-{{- end }}
