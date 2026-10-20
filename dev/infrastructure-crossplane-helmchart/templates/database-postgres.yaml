@@ -98,6 +98,7 @@ spec:
     engine: postgres
     engineVersion: {{ .Values.database.engineVersion | quote }}
     identifier: {{ default $databaseName .Values.database.identifier | quote }}
+    applyImmediately: {{ .Values.database.applyImmediately }}
     instanceClass: {{ .Values.database.instanceClass | quote }}
     allocatedStorage: {{ .Values.database.allocatedStorage }}
     storageType: gp3

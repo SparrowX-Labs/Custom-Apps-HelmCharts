@@ -14,6 +14,7 @@ database:
   type: postgres
   name: ""
   identifier: ""
+  applyImmediately: true
   instanceClass: db.t4g.micro
   allocatedStorage: 20
   engineVersion: "16"

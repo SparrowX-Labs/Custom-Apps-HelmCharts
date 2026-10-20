@@ -30,6 +30,7 @@ database:
   type: postgres
   name: customerdb
   identifier: sparrowx-dev-customerdb
+  applyImmediately: true
   instanceClass: db.t4g.micro
   allocatedStorage: 20
   backupRetentionPeriod: 1
