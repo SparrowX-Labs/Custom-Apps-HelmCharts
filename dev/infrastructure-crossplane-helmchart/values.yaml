@@ -1,5 +1,6 @@
 environment: dev
 projectName: sparrowx
+managedBy: crossplane
 region: eu-west-1
 vpcId: ""
 privateSubnetIds: []
@@ -12,6 +13,7 @@ database:
   enabled: false
   type: postgres
   name: ""
+  identifier: ""
   instanceClass: db.t4g.micro
   allocatedStorage: 20
   engineVersion: "16"

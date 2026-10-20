@@ -9,6 +9,7 @@ The shared values are defined once at the root:
 ```yaml
 environment: dev
 projectName: sparrowx
+managedBy: crossplane
 region: eu-west-1
 vpcId: vpc-0123456789abcdef0
 privateSubnetIds:
@@ -17,6 +18,10 @@ privateSubnetIds:
   - subnet-0123456789abcdef2
 ```
 
+Managed resources use `managementPolicies: ["*"]`, so removing a resource
+from the Argo CD application and syncing with prune enabled also deletes its
+AWS resource. Non-empty S3 buckets still require `s3.forceDestroy: true`.
+
 Enable a PostgreSQL database with a small set of database-specific values:
 
 ```yaml
@@ -24,6 +29,7 @@ database:
   enabled: true
   type: postgres
   name: customerdb
+  identifier: sparrowx-dev-customerdb
   instanceClass: db.t4g.micro
   allocatedStorage: 20
   backupRetentionPeriod: 1
