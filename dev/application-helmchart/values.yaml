@@ -1,9 +1,13 @@
 nameOverride: ""
 fullnameOverride: ""
+serviceName: ""
 projectName: sparrowx
 environment: dev
+extraAnnotations: {}
+extraLabels: {}
 replicaCount: 1
 image:
+  # Argo CD/Image Updater may supply these values per deployment.
   repository: ""
   tag: ""
   pullPolicy: IfNotPresent
@@ -22,6 +26,7 @@ container:
   args: []
   env: []
   envFrom: []
+appPort: null
 service:
   enabled: true
   type: ClusterIP
@@ -58,6 +63,7 @@ database:
   engine: postgres
   port: 5432
   host: ""
+  secretTags: {}
   secretStore:
     name: aws-secretsmanager
     kind: ClusterSecretStore

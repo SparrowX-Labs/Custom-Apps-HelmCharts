@@ -4,7 +4,9 @@ Reusable application workload chart. Application repositories provide a
 values file and select the resources they need through `service`, `ingress`,
 `configMap`, `secret`, and `autoscaling` values.
 
-The image repository is required. Secret `data` values must already be
+The image repository and tag are optional Helm inputs supplied by the deploying
+Argo CD workflow or Image Updater. When provided, they render as
+`repository:tag`. Secret `data` values must already be
 base64-encoded; use `stringData` for plaintext values supplied through a
 secret-management workflow.
 
@@ -24,5 +26,10 @@ database:
 ```
 
 When enabled, the chart exposes these non-sensitive values as `DB_ENGINE`,
-`DB_HOST`, and `DB_PORT`. Credentials remain supplied separately through the
-configured secret integration.
+`DB_HOST`, `DB_PORT`, and `DB_NAME`. The ExternalSecret maps the RDS-managed
+`username` and `password` fields to `DB_USERNAME` and `DB_PASSWORD`.
+
+ConfigMaps can be defined in the application values repository under the
+`configMap` section. The chart renders the resulting ConfigMap beside the
+Deployment; the application can consume it through `container.envFrom` or
+`container.env` using a `configMapRef` or `configMapKeyRef`.

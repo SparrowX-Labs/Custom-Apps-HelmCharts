@@ -5,6 +5,10 @@ metadata:
   name: {{ include "application-helmchart.fullname" . }}
   labels:
     {{- include "application-helmchart.labels" . | nindent 4 }}
+  {{- with .Values.extraAnnotations }}
+  annotations:
+    {{- include "application-helmchart.annotations" $ | nindent 4 }}
+  {{- end }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1

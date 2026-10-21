@@ -4,6 +4,10 @@ metadata:
   name: {{ include "application-helmchart.fullname" . }}
   labels:
     {{- include "application-helmchart.labels" . | nindent 4 }}
+  {{- with .Values.extraAnnotations }}
+  annotations:
+    {{- include "application-helmchart.annotations" $ | nindent 4 }}
+  {{- end }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -13,6 +17,9 @@ spec:
     metadata:
       labels:
         {{- include "application-helmchart.selectorLabels" . | nindent 8 }}
+        {{- with .Values.extraLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -28,11 +35,13 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Values.container.name }}
-          image: {{ if .Values.image.tag }}{{ printf "%s:%s" (required "image.repository is required" .Values.image.repository) .Values.image.tag | quote }}{{ else }}{{ required "image.repository is required" .Values.image.repository | quote }}{{ end }}
+          {{- if .Values.image.repository }}
+          image: {{ if .Values.image.tag }}{{ printf "%s:%s" .Values.image.repository .Values.image.tag | quote }}{{ else }}{{ .Values.image.repository | quote }}{{ end }}
+          {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: {{ .Values.container.port }}
+              containerPort: {{ default .Values.container.port .Values.appPort }}
               protocol: {{ .Values.container.protocol }}
           {{- with .Values.container.command }}
           command:
@@ -51,6 +60,8 @@ spec:
               value: {{ required "database.host is required when database.enabled is true" .Values.database.host | quote }}
             - name: DB_PORT
               value: {{ .Values.database.port | quote }}
+            - name: DB_NAME
+              value: {{ .Values.database.name | quote }}
             {{- end }}
             {{- with .Values.container.env }}
             {{- toYaml . | nindent 12 }}
