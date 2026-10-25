@@ -24,6 +24,8 @@ spec:
   vpcId: {{ .Values.vpcId | quote }}
   privateSubnetIds:
     {{- toYaml .Values.privateSubnetIds | nindent 4 }}
+  privateSubnetCidrs:
+    {{- toYaml .Values.privateSubnetCidrs | nindent 4 }}
   hostedZoneId: {{ required "hostedZoneId is required when composition.enabled is true" .Values.hostedZoneId | quote }}
   hostedZoneName: {{ required "hostedZoneName is required when composition.enabled is true" .Values.hostedZoneName | quote }}
   service:

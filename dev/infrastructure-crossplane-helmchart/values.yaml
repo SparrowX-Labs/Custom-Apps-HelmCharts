@@ -6,6 +6,7 @@ hostedZoneId: ""
 hostedZoneName: ""
 vpcId: ""
 privateSubnetIds: []
+privateSubnetCidrs: []
 
 composition:
   enabled: true
