@@ -1,9 +1,10 @@
 # gateway-api-helmchart
 
-Deploys the Gateway API objects for one gateway application. Keep the
-controller installation and Gateway API CRDs in platform infrastructure;
-this chart contains application-owned objects such as Gateway, HTTPRoute,
-GRPCRoute, ReferenceGrant, and backend policy resources.
+Deploys the shared Gateway API entry point and application-owned HTTPRoutes.
+Keep the Traefik controller installation and Gateway API CRDs in platform
+infrastructure. Environment-specific application values are supplied by the
+`gateway-api` repository.
 
-The chart can be installed once as a single Argo CD application while values
-contain any number of gateways and routes.
+The chart creates one shared GatewayClass and Gateway, then creates one
+HTTPRoute for every entry under `apis`. A ReferenceGrant is created only for
+entries that explicitly set `referenceGrant.enabled: true`.

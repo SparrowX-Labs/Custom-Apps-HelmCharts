@@ -1,11 +1,17 @@
-gatewayClasses: []
-gateways: []
-httpRoutes: []
-grpcRoutes: []
-tlsRoutes: []
-tcpRoutes: []
-udpRoutes: []
-referenceGrants: []
-backendTLSPolicies: []
-extraResources: []
+gatewayClass:
+  name: traefik
+  controllerName: traefik.io/gateway-controller
 
+gateway:
+  name: public-gateway
+  namespace: default
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      hostname: sparrowx.dev.mo2cloud.com
+      allowedRoutes:
+        namespaces:
+          from: Same
+
+apis: {}

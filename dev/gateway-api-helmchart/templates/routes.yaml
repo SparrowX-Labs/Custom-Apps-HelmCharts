@@ -1,30 +1,28 @@
-{{- range .Values.httpRoutes }}
+{{- $listener := index .Values.gateway.listeners 0 }}
+{{- range $apiKey, $api := .Values.apis }}
+{{- $namespace := default $.Values.gateway.namespace $api.namespace }}
+{{- $hostname := default $listener.hostname $api.hostname }}
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
-{{ toYaml . | nindent 0 }}
-{{- end }}
-{{- range .Values.grpcRoutes }}
----
-apiVersion: gateway.networking.k8s.io/v1
-kind: GRPCRoute
-{{ toYaml . | nindent 0 }}
-{{- end }}
-{{- range .Values.tlsRoutes }}
----
-apiVersion: gateway.networking.k8s.io/v1alpha2
-kind: TLSRoute
-{{ toYaml . | nindent 0 }}
-{{- end }}
-{{- range .Values.tcpRoutes }}
----
-apiVersion: gateway.networking.k8s.io/v1alpha2
-kind: TCPRoute
-{{ toYaml . | nindent 0 }}
-{{- end }}
-{{- range .Values.udpRoutes }}
----
-apiVersion: gateway.networking.k8s.io/v1alpha2
-kind: UDPRoute
-{{ toYaml . | nindent 0 }}
+metadata:
+  name: {{ required (printf "apis.%s.routeName is required" $apiKey) $api.routeName }}
+  namespace: {{ $namespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  hostnames:
+    - {{ $hostname }}
+  parentRefs:
+    - name: {{ default $.Values.gateway.name $api.gatewayName }}
+      namespace: {{ default $.Values.gateway.namespace $api.gatewayNamespace }}
+      sectionName: {{ default $listener.name $api.sectionName }}
+  rules:
+    - matches:
+        - path:
+            type: {{ default "PathPrefix" $api.pathType }}
+            value: {{ required (printf "apis.%s.path is required" $apiKey) $api.path }}
+      backendRefs:
+        - name: {{ required (printf "apis.%s.backendService is required" $apiKey) $api.backendService }}
+          port: {{ required (printf "apis.%s.servicePort is required" $apiKey) $api.servicePort }}
 {{- end }}
