@@ -14,6 +14,12 @@ spec:
     matchLabels:
       {{- include "application-helmchart.selectorLabels" . | nindent 6 }}
   template:
+    {{- $databaseEnabled := and (kindIs "bool" .Values.database.enabled) .Values.database.enabled }}
+    {{- $resourceSize := default "medium" .Values.resources.size }}
+    {{- if not (hasKey .Values.resources.profiles $resourceSize) }}
+    {{- fail (printf "resources.size must be one of: %s" (join ", " (keys .Values.resources.profiles | sortAlpha))) }}
+    {{- end }}
+    {{- $resourceProfile := index .Values.resources.profiles $resourceSize }}
     metadata:
       labels:
         {{- include "application-helmchart.selectorLabels" . | nindent 8 }}
@@ -51,9 +57,9 @@ spec:
           args:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- if or .Values.database.enabled .Values.container.env }}
+          {{- if or $databaseEnabled .Values.container.env }}
           env:
-            {{- if .Values.database.enabled }}
+            {{- if $databaseEnabled }}
             - name: DB_ENGINE
               value: {{ .Values.database.engine | quote }}
             - name: DB_HOST
@@ -67,9 +73,9 @@ spec:
             {{- toYaml . | nindent 12 }}
             {{- end }}
           {{- end }}
-          {{- if or .Values.database.enabled .Values.container.envFrom }}
+          {{- if or $databaseEnabled .Values.container.envFrom }}
           envFrom:
-            {{- if .Values.database.enabled }}
+            {{- if $databaseEnabled }}
             - secretRef:
                 name: {{ include "application-helmchart.databaseSecretName" . }}
             {{- end }}
@@ -77,9 +83,49 @@ spec:
             {{- toYaml . | nindent 12 }}
             {{- end }}
           {{- end }}
-          {{- with .Values.resources }}
           resources:
-            {{- toYaml . | nindent 12 }}
+            {{- toYaml $resourceProfile | nindent 12 }}
+          {{- if hasKey $.Values "livenessProbe" }}
+          {{- $probe := $.Values.livenessProbe }}
+          {{- if and (kindIs "bool" $probe.enabled) $probe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ default $.Values.probePath $probe.path | quote }}
+              port: {{ default "http" $probe.port }}
+            initialDelaySeconds: {{ default $.Values.probeDefaults.liveness.initialDelaySeconds $probe.initialDelaySeconds }}
+            periodSeconds: {{ default $.Values.probeDefaults.liveness.periodSeconds $probe.periodSeconds }}
+            timeoutSeconds: {{ default $.Values.probeDefaults.liveness.timeoutSeconds $probe.timeoutSeconds }}
+            successThreshold: {{ default $.Values.probeDefaults.liveness.successThreshold $probe.successThreshold }}
+            failureThreshold: {{ default $.Values.probeDefaults.liveness.failureThreshold $probe.failureThreshold }}
+          {{- end }}
+          {{- end }}
+          {{- if hasKey $.Values "readinessProbe" }}
+          {{- $probe := $.Values.readinessProbe }}
+          {{- if and (kindIs "bool" $probe.enabled) $probe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ default $.Values.probePath $probe.path | quote }}
+              port: {{ default "http" $probe.port }}
+            initialDelaySeconds: {{ default $.Values.probeDefaults.readiness.initialDelaySeconds $probe.initialDelaySeconds }}
+            periodSeconds: {{ default $.Values.probeDefaults.readiness.periodSeconds $probe.periodSeconds }}
+            timeoutSeconds: {{ default $.Values.probeDefaults.readiness.timeoutSeconds $probe.timeoutSeconds }}
+            successThreshold: {{ default $.Values.probeDefaults.readiness.successThreshold $probe.successThreshold }}
+            failureThreshold: {{ default $.Values.probeDefaults.readiness.failureThreshold $probe.failureThreshold }}
+          {{- end }}
+          {{- end }}
+          {{- if hasKey $.Values "startupProbe" }}
+          {{- $probe := $.Values.startupProbe }}
+          {{- if and (kindIs "bool" $probe.enabled) $probe.enabled }}
+          startupProbe:
+            httpGet:
+              path: {{ default $.Values.probePath $probe.path | quote }}
+              port: {{ default "http" $probe.port }}
+            initialDelaySeconds: {{ default $.Values.probeDefaults.startup.initialDelaySeconds $probe.initialDelaySeconds }}
+            periodSeconds: {{ default $.Values.probeDefaults.startup.periodSeconds $probe.periodSeconds }}
+            timeoutSeconds: {{ default $.Values.probeDefaults.startup.timeoutSeconds $probe.timeoutSeconds }}
+            successThreshold: {{ default $.Values.probeDefaults.startup.successThreshold $probe.successThreshold }}
+            failureThreshold: {{ default $.Values.probeDefaults.startup.failureThreshold $probe.failureThreshold }}
+          {{- end }}
           {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
