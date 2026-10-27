@@ -1,0 +1,126 @@
+nameOverride: ""
+fullnameOverride: ""
+serviceName: ""
+projectName: sparrowx
+environment: prod
+extraAnnotations: {}
+extraLabels: {}
+replicaCount: 1
+image:
+  # Argo CD/Image Updater may supply these values per deployment.
+  repository: ""
+  tag: ""
+  pullPolicy: IfNotPresent
+imagePullSecrets: []
+podAnnotations: {}
+podLabels: {}
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+container:
+  name: app
+  port: 8080
+  protocol: TCP
+  command: []
+  args: []
+  env: []
+  envFrom: []
+appPort: null
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+  targetPort: http
+  annotations: {}
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts: []
+  tls: []
+configMap:
+  enabled: false
+  data: {}
+secret:
+  enabled: false
+  type: Opaque
+  data: {}
+  stringData: {}
+resources:
+  size: medium
+  profiles:
+    micro:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi
+    small:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 250m
+        memory: 256Mi
+    medium:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+      limits:
+        cpu: 400m
+        memory: 1Gi
+    large:
+      requests:
+        cpu: 500m
+        memory: 512Mi
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+    xlarge:
+      requests:
+        cpu: 1000m
+        memory: 1Gi
+      limits:
+        cpu: 2000m
+        memory: 2Gi
+probePath: /health
+probeDefaults:
+  liveness:
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 2
+    successThreshold: 1
+    failureThreshold: 3
+  readiness:
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 2
+    successThreshold: 1
+    failureThreshold: 3
+  startup:
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 2
+    successThreshold: 1
+    failureThreshold: 30
+nodeSelector: {}
+tolerations: []
+affinity: {}
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+
+database:
+  enabled: false
+  name: ""
+  engine: postgres
+  port: 5432
+  host: ""
+  secretTags: {}
+  secretStore:
+    name: aws-secretsmanager
+    kind: ClusterSecretStore

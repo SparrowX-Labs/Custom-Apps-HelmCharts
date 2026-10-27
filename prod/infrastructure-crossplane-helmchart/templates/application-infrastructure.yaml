@@ -1,0 +1,44 @@
+{{- if .Values.composition.enabled }}
+{{- if not (kindIs "bool" .Values.composition.enabled) }}
+{{- fail "composition.enabled must be a boolean true or false" }}
+{{- end }}
+{{- if not (kindIs "bool" .Values.database.enabled) }}
+{{- fail "database.enabled must be a boolean true or false" }}
+{{- end }}
+{{- if not (kindIs "bool" .Values.s3.enabled) }}
+{{- fail "s3.enabled must be a boolean true or false" }}
+{{- end }}
+{{- $serviceName := required "service.name is required when composition.enabled is true" .Values.service.name }}
+{{- $resourceName := printf "%s-%s-%s" .Values.projectName .Values.environment $serviceName | lower | replace "_" "-" | trunc 63 | trimSuffix "-" }}
+apiVersion: infrastructure.sparrowx.io/v1alpha1
+kind: XApplicationInfrastructure
+metadata:
+  name: {{ $resourceName | quote }}
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  compositionRef:
+    name: {{ .Values.composition.name | quote }}
+  environment: {{ .Values.environment | quote }}
+  projectName: {{ .Values.projectName | quote }}
+  region: {{ .Values.region | quote }}
+  vpcId: {{ .Values.vpcId | quote }}
+  privateSubnetIds:
+    {{- toYaml .Values.privateSubnetIds | nindent 4 }}
+  privateSubnetCidrs:
+    {{- toYaml .Values.privateSubnetCidrs | nindent 4 }}
+  hostedZoneId: {{ required "hostedZoneId is required when composition.enabled is true" .Values.hostedZoneId | quote }}
+  hostedZoneName: {{ required "hostedZoneName is required when composition.enabled is true" .Values.hostedZoneName | quote }}
+  service:
+    name: {{ $serviceName | quote }}
+  database:
+    enabled: {{ .Values.database.enabled }}
+    engine: {{ .Values.database.engine | quote }}
+    name: {{ .Values.database.name | quote }}
+    size: {{ .Values.database.size | quote }}
+    storage: {{ .Values.database.storage }}
+    multiAZ: {{ .Values.database.multiAZ }}
+  s3:
+    enabled: {{ .Values.s3.enabled }}
+    name: {{ .Values.s3.name | quote }}
+    forceDestroy: {{ .Values.s3.forceDestroy }}
+{{- end }}

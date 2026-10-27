@@ -1,0 +1,5 @@
+apiVersion: v2
+name: application-helmchart
+description: Reusable Kubernetes application workload resources
+type: application
+version: 0.2.0

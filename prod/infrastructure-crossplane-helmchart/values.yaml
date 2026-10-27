@@ -1,0 +1,35 @@
+environment: prod
+projectName: sparrowx
+managedBy: crossplane
+region: eu-west-1
+hostedZoneId: ""
+hostedZoneName: ""
+vpcId: ""
+privateSubnetIds: []
+privateSubnetCidrs: []
+
+composition:
+  enabled: true
+  name: application-infrastructure
+
+service:
+  name: ""
+
+providerConfig:
+  create: true
+  name: aws-provider
+
+database:
+  enabled: false
+  engine: postgres
+  name: ""
+  size: small
+  storage: 20
+  multiAZ: false
+
+s3:
+  enabled: false
+  name: ""
+  forceDestroy: false
+
+resources: []

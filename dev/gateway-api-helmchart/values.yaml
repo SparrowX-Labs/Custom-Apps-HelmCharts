@@ -3,8 +3,8 @@ gatewayClass:
   controllerName: traefik.io/gateway-controller
 
 gateway:
-  name: public-gateway
-  namespace: default
+  name: public-gateway-dev
+  namespace: dev
   listeners:
     - name: http
       protocol: HTTP

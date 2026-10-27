@@ -1,0 +1,19 @@
+gatewayClass:
+    name: traefik-prod
+    controllerName: traefik.io/gateway-controller
+    labels:
+      sparrowx.io/traefik-instance: prod
+
+gateway:
+  name: public-gateway-prod
+  namespace: prod
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      hostname: sparrowx.prod.mo2cloud.com
+      allowedRoutes:
+        namespaces:
+          from: Same
+
+apis: {}
