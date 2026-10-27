@@ -1,9 +1,9 @@
 gatewayClass:
-    name: traefik-prod
-    controllerName: traefik.io/gateway-controller
-    labels:
-      sparrowx.io/traefik-instance: prod
-
+  name: traefik-prod
+  controllerName: traefik.io/gateway-controller
+  labels:
+    sparrowx.io/traefik-instance: prod
+    
 gateway:
   name: public-gateway-prod
   namespace: prod

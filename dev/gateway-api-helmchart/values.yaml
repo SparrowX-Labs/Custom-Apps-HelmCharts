@@ -1,6 +1,8 @@
 gatewayClass:
   name: traefik
   controllerName: traefik.io/gateway-controller
+  labels:
+    sparrowx.io/traefik-instance: dev
 
 gateway:
   name: public-gateway-dev
