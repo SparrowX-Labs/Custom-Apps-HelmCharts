@@ -122,5 +122,5 @@ database:
   host: ""
   secretTags: {}
   secretStore:
-    name: aws-secretsmanager
+    name: aws-secretsmanager-prod
     kind: ClusterSecretStore
