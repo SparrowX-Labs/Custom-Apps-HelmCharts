@@ -37,6 +37,9 @@ ingress:
   enabled: false
   className: ""
   annotations: {}
+  # When set, the chart generates the rule and TLS host automatically.
+  host: ""
+  name: ""
   hosts: []
   tls: []
 configMap:

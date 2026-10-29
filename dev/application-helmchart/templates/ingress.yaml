@@ -1,4 +1,6 @@
 {{- if .Values.ingress.enabled }}
+{{- $host := .Values.ingress.host }}
+{{- $backendName := default (include "application-helmchart.fullname" .) .Values.ingress.name }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -18,10 +20,28 @@ spec:
   {{- with .Values.ingress.className }}
   ingressClassName: {{ . }}
   {{- end }}
-  {{- with .Values.ingress.tls }}
+  {{- if $host }}
   tls:
-    {{- toYaml . | nindent 4 }}
+    - hosts:
+        - {{ $host | quote }}
+  {{- else if .Values.ingress.tls }}
+  tls:
+    {{- toYaml .Values.ingress.tls | nindent 4 }}
   {{- end }}
+  {{- if $host }}
+  rules:
+    - host: {{ $host | quote }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $backendName }}
+                port:
+                  number: 80
+  {{- else }}
   rules:
     {{- toYaml .Values.ingress.hosts | nindent 4 }}
+  {{- end }}
 {{- end }}
