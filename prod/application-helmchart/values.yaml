@@ -10,7 +10,7 @@ image:
   # Argo CD/Image Updater may supply these values per deployment.
   repository: ""
   tag: ""
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 imagePullSecrets: []
 podAnnotations: {}
 podLabels: {}
