@@ -18,6 +18,24 @@ serviceAccount:
   create: true
   name: ""
   annotations: {}
+rbac:
+  create: false
+  rules:
+    - apiGroups: [""]
+      resources: [pods, services, configmaps]
+      verbs: [get, list, watch]
+    - apiGroups: [apps]
+      resources: [deployments, replicasets, statefulsets]
+      verbs: [get, list, watch]
+    - apiGroups: [batch]
+      resources: [jobs, cronjobs]
+      verbs: [get, list, watch]
+    - apiGroups: [autoscaling]
+      resources: [horizontalpodautoscalers]
+      verbs: [get, list, watch]
+    - apiGroups: [networking.k8s.io]
+      resources: [ingresses]
+      verbs: [get, list, watch]
 container:
   name: app
   port: 8080
@@ -92,19 +110,19 @@ probePath: /health
 probeDefaults:
   liveness:
     initialDelaySeconds: 5
-    periodSeconds: 10
+    periodSeconds: 30
     timeoutSeconds: 2
     successThreshold: 1
     failureThreshold: 3
   readiness:
     initialDelaySeconds: 10
-    periodSeconds: 5
+    periodSeconds: 15
     timeoutSeconds: 2
     successThreshold: 1
     failureThreshold: 3
   startup:
     initialDelaySeconds: 10
-    periodSeconds: 10
+    periodSeconds: 15
     timeoutSeconds: 2
     successThreshold: 1
     failureThreshold: 30

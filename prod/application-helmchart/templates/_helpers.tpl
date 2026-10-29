@@ -5,6 +5,9 @@
 {{- define "application-helmchart.fullname" -}}
 {{- default (include "application-helmchart.name" .) .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
+{{- define "application-helmchart.kubernetesId" -}}
+{{- default (include "application-helmchart.fullname" .) (index .Values.extraLabels "backstage.io/kubernetes-id") }}
+{{- end }}
 {{- define "application-helmchart.labels" -}}
 {{- $labels := dict
       "app.kubernetes.io/name" (include "application-helmchart.name" .)
@@ -12,6 +15,7 @@
       "app.kubernetes.io/managed-by" .Release.Service
       "app.kubernetes.io/part-of" .Values.projectName
       "helm.sh/chart" (printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_")
+      "backstage.io/kubernetes-id" (include "application-helmchart.kubernetesId" .)
 }}
 {{- range $key, $value := .Values.extraLabels }}{{- $_ := set $labels $key $value }}{{- end }}
 {{- toYaml $labels }}
@@ -22,6 +26,7 @@
 {{- define "application-helmchart.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "application-helmchart.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+backstage.io/kubernetes-id: {{ include "application-helmchart.kubernetesId" . }}
 {{- end }}
 {{- define "application-helmchart.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
