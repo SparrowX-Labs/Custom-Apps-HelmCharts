@@ -26,7 +26,6 @@
 {{- define "application-helmchart.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "application-helmchart.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
-backstage.io/kubernetes-id: {{ include "application-helmchart.kubernetesId" . }}
 {{- end }}
 {{- define "application-helmchart.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}

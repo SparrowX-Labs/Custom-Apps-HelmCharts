@@ -23,6 +23,7 @@ spec:
     metadata:
       labels:
         {{- include "application-helmchart.selectorLabels" . | nindent 8 }}
+        backstage.io/kubernetes-id: {{ include "application-helmchart.kubernetesId" . | quote }}
         {{- with .Values.extraLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
