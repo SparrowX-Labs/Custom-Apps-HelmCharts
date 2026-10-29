@@ -22,6 +22,10 @@ spec:
         - path:
             type: {{ default "PathPrefix" $api.pathType }}
             value: {{ required (printf "apis.%s.path is required" $apiKey) $api.path }}
+      {{- with $api.filters }}
+      filters:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       backendRefs:
         - name: {{ required (printf "apis.%s.backendService is required" $apiKey) $api.backendService }}
           port: {{ required (printf "apis.%s.servicePort is required" $apiKey) $api.servicePort }}
