@@ -22,10 +22,10 @@ rbac:
   create: false
   rules:
     - apiGroups: [""]
-      resources: [pods, services, configmaps]
+      resources: [pods, services, configmaps, limitranges, resourcequotas]
       verbs: [get, list, watch]
     - apiGroups: [apps]
-      resources: [deployments, replicasets, statefulsets]
+      resources: [deployments, replicasets, statefulsets, daemonsets]
       verbs: [get, list, watch]
     - apiGroups: [batch]
       resources: [jobs, cronjobs]
